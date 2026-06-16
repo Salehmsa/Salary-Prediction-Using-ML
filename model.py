@@ -1,4 +1,6 @@
 
+import joblib
+
 import pandas as pd
 
 from sklearn.linear_model import LinearRegression
@@ -38,10 +40,24 @@ def train_models(df):
         model.fit(X_train, y_train)
         preds = model.predict(X_test)
 
-        # ✅ Here we use the new function
         results[name] = {
             "model": model,
             **evaluate_model(y_test, preds)
         }
 
+    best_model_name = max(results, key=lambda x: results[x]["R2"])
+    best_model = results[best_model_name]["model"]
+
+    save_model(best_model)
+
     return results
+
+# ✅ Save the model 
+def save_model(model):
+    joblib.dump(model, "model.pkl")
+
+
+# ✅ Download the model
+def load_model():
+    return joblib.load("model.pkl")
+
