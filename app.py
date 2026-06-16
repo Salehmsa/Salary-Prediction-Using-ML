@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import joblib
 import os
 
+from sklearn.linear_model import LinearRegression
 from model import load_model, train_models
 
 # ----------------------------------
@@ -36,6 +37,13 @@ st.subheader("📈 Dataset Summary")
 st.dataframe(df.describe())
 
 # ----------------------------------
+# ✅ Show Training Message (UI outside cache)
+# ----------------------------------
+if not os.path.exists("model.pkl"):
+    st.toast("Training model...", icon="🔄")
+    st.info("🔄 Training model for the first time...")
+
+# ----------------------------------
 # ✅ Load or Train Model
 # ----------------------------------
 @st.cache_resource
@@ -43,15 +51,15 @@ def get_model():
     if os.path.exists("model.pkl") and os.path.exists("model_name.pkl"):
         return load_model()
     else:
-        st.toast("Training model...", icon="🔄")
-        st.info("🔄 Training model for the first time...")
         results = train_models(df)
         best = max(results, key=lambda x: results[x]["R2"])
         return results[best]["model"]
 
 model = get_model()
 
+# ----------------------------------
 # ✅ Load model name
+# ----------------------------------
 if os.path.exists("model_name.pkl"):
     model_name = joblib.load("model_name.pkl")
 else:
@@ -71,28 +79,61 @@ sk = st.sidebar.slider("Skill", 1.0, 10.0, 5.0)
 prediction = model.predict([[exp, sk]])[0]
 
 st.success(f"🏆 Best Model: {model_name}")
-
 st.subheader("💰 Salary Prediction")
 st.success(f"Predicted Salary: {prediction:,.0f} SAR")
 
 st.caption("⚡ Using pretrained model (model.pkl)")
 
 # ----------------------------------
-# 📊 Dashboard
+# 📊 Dashboard with Regression Lines
 # ----------------------------------
 st.markdown("## 📊 Dashboard")
 
 col1, col2 = st.columns(2)
 
+# ✅ Experience vs Salary
 with col1:
     fig, ax = plt.subplots()
+
+    # scatter
     ax.scatter(df['experience'], df['salary'], alpha=0.5)
+
+    # regression line
+    lr = LinearRegression()
+    X_exp = df[['experience']]
+    y = df['salary']
+    lr.fit(X_exp, y)
+
+    sorted_df = df.sort_values("experience")
+    ax.plot(
+        sorted_df['experience'],
+        lr.predict(sorted_df[['experience']]),
+        color='red',
+        linewidth=2
+    )
+
     ax.set_title("Experience vs Salary")
     st.pyplot(fig)
 
+# ✅ Skill vs Salary
 with col2:
     fig, ax = plt.subplots()
+
     ax.scatter(df['skill'], df['salary'], alpha=0.5)
+
+    lr = LinearRegression()
+    X_skill = df[['skill']]
+    y = df['salary']
+    lr.fit(X_skill, y)
+
+    sorted_df = df.sort_values("skill")
+    ax.plot(
+        sorted_df['skill'],
+        lr.predict(sorted_df[['skill']]),
+        color='red',
+        linewidth=2
+    )
+
     ax.set_title("Skill vs Salary")
     st.pyplot(fig)
 
