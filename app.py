@@ -43,7 +43,8 @@ def get_model():
     if os.path.exists("model.pkl") and os.path.exists("model_name.pkl"):
         return load_model()
     else:
-        st.warning("⚠️ Model not found. Training...")
+        st.toast("Training model...", icon="🔄")
+        st.info("🔄 Training model for the first time...")
         results = train_models(df)
         best = max(results, key=lambda x: results[x]["R2"])
         return results[best]["model"]
@@ -113,7 +114,7 @@ if uploaded_file is not None:
 
     if {'experience', 'skill'}.issubset(user_data.columns):
         preds = model.predict(user_data[['experience', 'skill']])
-        user_data["Predicted Salary"] = preds
+        user_data['Predicted Salary'] = preds
 
         st.success("✅ Predictions Completed")
         st.dataframe(user_data)

@@ -9,7 +9,7 @@ from sklearn.metrics import r2_score, mean_absolute_error
 
 
 # ----------------------------------
-# ✅ Evaluation Function
+# ✅ Evaluate Model
 # ----------------------------------
 def evaluate_model(y_test, y_pred):
     return {
@@ -73,10 +73,8 @@ def train_models(df):
 
 
 # ----------------------------------
-# ✅ Run Training Once (Manual)
+# ✅ Run manually (one time)
 # ----------------------------------
 if __name__ == "__main__":
     df = pd.read_csv("data/salary_data_250.csv")
     train_models(df)
-
-
