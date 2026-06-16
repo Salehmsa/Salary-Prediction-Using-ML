@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import joblib
+import os
 
-from model import load_model
+from model import load_model, train_models
 
 # ----------------------------------
 # 🎨 Page Config
@@ -10,7 +12,7 @@ from model import load_model
 st.set_page_config(page_title="Salary Predictor Pro", page_icon="💼")
 
 st.title("💼 Salary Prediction App")
-st.markdown("### Production-Level Machine Learning Application")
+st.markdown("### Production Machine Learning Application")
 
 # ----------------------------------
 # 📊 Load Data
@@ -23,15 +25,36 @@ df = pd.read_csv("data/salary_data_250.csv")
 st.subheader("📊 Dataset Overview")
 
 st.markdown("### 📌 Basic Info")
-st.write(f"Number of rows: {df.shape[0]}")
-st.write(f"Number of columns: {df.shape[1]}")
-st.write("Column Names:", df.columns.tolist())
+st.write(f"Rows: {df.shape[0]}")
+st.write(f"Columns: {df.shape[1]}")
+st.write("Columns:", df.columns.tolist())
 
 with st.expander("🔍 Show Raw Data"):
     st.dataframe(df.head())
 
 st.subheader("📈 Dataset Summary")
 st.dataframe(df.describe())
+
+# ----------------------------------
+# ✅ Load or Train Model
+# ----------------------------------
+@st.cache_resource
+def get_model():
+    if os.path.exists("model.pkl") and os.path.exists("model_name.pkl"):
+        return load_model()
+    else:
+        st.warning("⚠️ Model not found. Training...")
+        results = train_models(df)
+        best = max(results, key=lambda x: results[x]["R2"])
+        return results[best]["model"]
+
+model = get_model()
+
+# ✅ Load model name
+if os.path.exists("model_name.pkl"):
+    model_name = joblib.load("model_name.pkl")
+else:
+    model_name = "Unknown"
 
 # ----------------------------------
 # 📥 User Input
@@ -42,21 +65,15 @@ exp = st.sidebar.slider("Experience", 0.0, 15.0, 5.0)
 sk = st.sidebar.slider("Skill", 1.0, 10.0, 5.0)
 
 # ----------------------------------
-# 💰 Load Model (Cached)
-# ----------------------------------
-@st.cache_resource
-def get_model():
-    return load_model()
-
-model = get_model()
-
-# ----------------------------------
 # 💰 Prediction
 # ----------------------------------
 prediction = model.predict([[exp, sk]])[0]
 
+st.success(f"🏆 Best Model: {model_name}")
+
 st.subheader("💰 Salary Prediction")
 st.success(f"Predicted Salary: {prediction:,.0f} SAR")
+
 st.caption("⚡ Using pretrained model (model.pkl)")
 
 # ----------------------------------
@@ -79,12 +96,6 @@ with col2:
     st.pyplot(fig)
 
 # ----------------------------------
-# 🎯 Feature Importance (Info)
-# ----------------------------------
-st.markdown("## 🎯 Feature Importance")
-st.info("⚡ Feature importance calculated using training models (Random Forest)")
-
-# ----------------------------------
 # 📂 Upload CSV
 # ----------------------------------
 st.markdown("## 📂 Upload Your Data")
@@ -100,14 +111,14 @@ if uploaded_file is not None:
     st.write("📥 Uploaded Data Preview")
     st.dataframe(user_data.head())
 
-    if {'experience','skill'}.issubset(user_data.columns):
+    if {'experience', 'skill'}.issubset(user_data.columns):
         preds = model.predict(user_data[['experience', 'skill']])
-        user_data['Predicted Salary'] = preds
+        user_data["Predicted Salary"] = preds
 
         st.success("✅ Predictions Completed")
         st.dataframe(user_data)
     else:
-        st.error("❌ Must contain 'experience' and 'skill' columns")
+        st.error("❌ CSV must contain 'experience' and 'skill' columns")
 
 # ----------------------------------
 # 👤 Save Results
@@ -121,8 +132,6 @@ if st.button("Save Result"):
     if name == "":
         st.warning("⚠️ Please enter your name")
     else:
-        import os
-
         if not os.path.exists("results.csv"):
             with open("results.csv", "w") as f:
                 f.write("name,experience,skill,prediction\n")
