@@ -37,7 +37,7 @@ st.subheader("📈 Dataset Summary")
 st.dataframe(df.describe())
 
 # ----------------------------------
-# ✅ Show Training Message (UI outside cache)
+# ✅ Show training message
 # ----------------------------------
 if not os.path.exists("model.pkl"):
     st.toast("Training model...", icon="🔄")
@@ -79,13 +79,14 @@ sk = st.sidebar.slider("Skill", 1.0, 10.0, 5.0)
 prediction = model.predict([[exp, sk]])[0]
 
 st.success(f"🏆 Best Model: {model_name}")
+
 st.subheader("💰 Salary Prediction")
 st.success(f"Predicted Salary: {prediction:,.0f} SAR")
 
 st.caption("⚡ Using pretrained model (model.pkl)")
 
 # ----------------------------------
-# 📊 Dashboard with Regression Lines
+# 📊 Dashboard (INTERACTIVE ✅)
 # ----------------------------------
 st.markdown("## 📊 Dashboard")
 
@@ -95,10 +96,8 @@ col1, col2 = st.columns(2)
 with col1:
     fig, ax = plt.subplots()
 
-    # scatter
     ax.scatter(df['experience'], df['salary'], alpha=0.5)
 
-    # regression line
     lr = LinearRegression()
     X_exp = df[['experience']]
     y = df['salary']
@@ -112,7 +111,12 @@ with col1:
         linewidth=2
     )
 
+    # ✅ نقطة المستخدم (تتحرك 🔥)
+    ax.scatter(exp, prediction, color='green', s=150, label="Your Input")
+    ax.legend()
+
     ax.set_title("Experience vs Salary")
+
     st.pyplot(fig)
 
 # ✅ Skill vs Salary
@@ -134,7 +138,12 @@ with col2:
         linewidth=2
     )
 
+    # ✅ نقطة المستخدم
+    ax.scatter(sk, prediction, color='green', s=150, label="Your Input")
+    ax.legend()
+
     ax.set_title("Skill vs Salary")
+
     st.pyplot(fig)
 
 # ----------------------------------
