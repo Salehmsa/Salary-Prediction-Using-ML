@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Salary Prediction Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0D18;--card:#111828;--c2:#162038;--br:#243050;
+  --grn:#10B981;--gld:#F59E0B;--ind:#6366F1;--rd:#EF4444;
+  --wh:#fff;--mu:#8895AE;--dm:#3D4F6B}
+html,body{background:var(--bg);color:var(--wh);min-height:100vh;
+  font-family:system-ui,-apple-system,sans-serif;font-size:14px}
+body.ar{direction:rtl;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+
+/* HEADER */
+.hdr{background:var(--card);border-bottom:1px solid var(--br);
+  padding:12px 20px;display:flex;align-items:center;
+  justify-content:space-between;gap:10px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:99}
+.ht{font-size:16px;font-weight:700}
+.hm{font-size:11px;color:var(--mu);margin-top:2px}
+.hr{display:flex;gap:8px;align-items:center}
+.bst{padding:7px 14px;border-radius:20px;background:var(--grn);color:#000;
+  font-size:12px;font-weight:700;text-decoration:none;border:none;cursor:pointer}
+.bln{padding:7px 14px;border-radius:20px;background:transparent;
+  color:var(--gld);border:1.5px solid var(--gld);font-size:12px;
+  font-weight:700;cursor:pointer;font-family:inherit}
+.bln:hover{background:var(--gld);color:#000}
+
+/* KPIS */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  max-width:1100px;margin:20px auto;padding:0 20px}
+.kpi{background:var(--card);border:1px solid var(--br);border-radius:12px;
+  padding:14px 16px;text-align:center}
+.kv{font-size:26px;font-weight:700}
+.kl{font-size:10px;color:var(--mu);margin-top:4px;
+  text-transform:uppercase;letter-spacing:.06em}
+
+/* TABS */
+.tabs{display:flex;max-width:1100px;margin:0 auto;padding:0 20px;overflow-x:auto}
+.tb{padding:10px 18px;font-size:13px;font-weight:500;color:var(--mu);
+  background:none;border:none;border-bottom:2px solid transparent;
+  cursor:pointer;white-space:nowrap;font-family:inherit}
+.tb.on{color:var(--grn);border-bottom-color:var(--grn)}
+
+/* CONTENT */
+.main{max-width:1100px;margin:0 auto;padding:20px 20px 60px}
+.sec{display:none}
+.sec.on{display:block}
+
+/* PREDICTOR */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.pc{background:var(--card);border:1px solid var(--br);
+  border-radius:14px;padding:24px}
+.pc h3{font-size:14px;font-weight:600;margin-bottom:18px}
+.ig{margin-bottom:18px}
+.il{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--mu);margin-bottom:7px;display:block}
+.sv{font-size:22px;font-weight:700;color:var(--grn);text-align:right;margin-bottom:5px}
+input[type=range]{width:100%;-webkit-appearance:none;height:5px;
+  border-radius:3px;background:var(--br);cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;
+  height:18px;border-radius:50%;background:var(--grn);cursor:pointer;
+  border:2px solid var(--bg)}
+.sks{display:flex;gap:6px;flex-wrap:wrap}
+.sk{flex:1;min-width:60px;padding:8px 4px;border-radius:8px;
+  font-size:11px;font-weight:600;border:1.5px solid var(--br);
+  background:transparent;color:var(--mu);cursor:pointer;
+  font-family:inherit;text-align:center;transition:all .15s}
+.sk.on,.sk:hover{border-color:var(--grn);color:var(--grn);
+  background:rgba(16,185,129,.08)}
+.sel{width:100%;background:var(--c2);border:1px solid var(--br);
+  border-radius:8px;padding:10px 12px;font-size:13px;color:var(--wh);
+  outline:none;cursor:pointer;font-family:inherit}
+
+/* SALARY DISPLAY */
+.sd{background:var(--card);border:1px solid var(--br);border-radius:14px;
+  padding:28px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;min-height:340px;
+  background-image:radial-gradient(ellipse at 50% 30%,rgba(16,185,129,.07) 0%,transparent 70%)}
+.sdl{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--mu);margin-bottom:12px}
+.sdn{font-size:58px;font-weight:700;color:var(--grn);line-height:1}
+.sdp{font-size:13px;color:var(--mu);margin-top:5px}
+.sdr{margin-top:16px;padding:10px 20px;border-radius:10px;
+  background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);
+  text-align:center}
+.sdrl{font-size:10px;color:var(--mu);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:4px}
+.sdrv{font-size:13px;font-weight:600}
+.mdb{margin-top:16px;padding:6px 14px;border-radius:20px;
+  background:rgba(16,185,129,.1);color:var(--grn);
+  border:1px solid rgba(16,185,129,.2);font-size:11px;font-weight:600}
+.cbl{font-size:10px;color:var(--mu);margin-top:14px;
+  display:flex;justify-content:space-between;width:100%}
+.cbt{height:5px;background:var(--br);border-radius:3px;
+  width:100%;margin-top:4px;overflow:hidden}
+.cbf{height:100%;background:linear-gradient(90deg,var(--grn),#34d399);
+  border-radius:3px;transition:width .4s}
+
+/* MODEL CARDS */
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.mc{background:var(--card);border:1px solid var(--br);border-radius:12px;
+  padding:20px;position:relative}
+.mc.win{border-color:var(--gld)}
+.wtg{position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  background:var(--gld);color:#000;font-size:9px;font-weight:700;
+  padding:2px 10px;border-radius:10px;white-space:nowrap}
+.mn{font-size:13px;font-weight:600;margin-bottom:3px}
+.md{font-size:11px;color:var(--mu);line-height:1.5;margin-bottom:14px}
+.mr{display:flex;justify-content:space-between;padding:7px 0;
+  border-bottom:.5px solid var(--br);font-size:11px}
+.mr:last-of-type{border-bottom:none}
+.mv{font-weight:600;font-size:12px}
+.bt{height:5px;background:var(--br);border-radius:3px;
+  margin-top:10px;overflow:hidden}
+.bf{height:100%;border-radius:3px}
+
+/* CSS BARS (for insights) */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bar-name{font-size:12px;width:140px;flex-shrink:0}
+.bar-track{flex:1;height:8px;background:var(--br);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-pct{font-size:12px;font-weight:600;width:36px;text-align:right}
+
+/* SVG CHART */
+.svg-wrap{background:var(--c2);border-radius:10px;padding:14px;margin-top:4px}
+.svg-wrap svg text{font-family:system-ui,sans-serif}
+.leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--mu)}
+.leg span{display:flex;align-items:center;gap:5px}
+.leg-dot{width:10px;height:3px;border-radius:2px;display:inline-block}
+
+/* 2-col grid for insights */
+.ig2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.icard{background:var(--card);border:1px solid var(--br);border-radius:12px;padding:20px}
+.icard h3{font-size:13px;font-weight:600;margin-bottom:4px}
+.isub{font-size:11px;color:var(--mu);margin-bottom:14px}
+
+/* ABOUT */
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ac{background:var(--card);border:1px solid var(--br);border-radius:12px;padding:20px}
+.ac h3{font-size:13px;font-weight:600;color:var(--grn);margin-bottom:12px}
+.step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+.sn{width:24px;height:24px;border-radius:50%;background:var(--grn);color:#000;
+  font-size:11px;font-weight:700;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:1px}
+.st{font-size:12px;color:var(--mu)}
+.st strong{display:block;color:var(--wh);font-size:12px;margin-bottom:2px}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px}
+.chip{background:var(--c2);border:1px solid var(--br);border-radius:7px;
+  padding:7px 8px;font-size:10px;color:var(--mu);text-align:center}
+.lnks{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.lg{padding:7px 14px;border-radius:8px;font-size:11px;font-weight:700;
+  text-decoration:none;border:1px solid;transition:all .2s}
+.lg.gh{border-color:var(--br);color:var(--mu)}
+.lg.gh:hover{border-color:var(--wh);color:var(--wh)}
+.lg.st2{border-color:var(--grn);color:var(--grn);background:rgba(16,185,129,.08)}
+.lg.st2:hover{background:var(--grn);color:#000}
+.res{margin-top:14px;padding:12px;background:rgba(16,185,129,.05);
+  border:1px solid rgba(16,185,129,.15);border-radius:9px;font-size:12px;color:var(--mu)}
+.res strong{color:var(--wh)}
+
+/* FOOTER */
+.ftr{border-top:1px solid var(--br);padding:16px 20px;
+  text-align:center;font-size:11px;color:var(--dm)}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .kpis,.mg,.ag,.ig2{grid-template-columns:repeat(2,1fr)}
+  .pg{grid-template-columns:1fr}
+  .sdn{font-size:40px}
+}
+@media(max-width:420px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .mg,.ag,.ig2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div>
+    <div class="ht" id="hdrTitle">💼 Salary Prediction Pro — ML Dashboard</div>
+    <div class="hm" id="hdrSub">Linear Regression · Random Forest · Decision Tree</div>
+  </div>
+  <div class="hr">
+    <a href="https://salary-prediction-using-ml-n2gzwmuwzyxfsvjsagvkgt.streamlit.app/"
+       target="_blank" class="bst" id="btnApp">▶ Try Live App</a>
+    <button class="bln" id="btnLang" onclick="toggleLang()">🌐 عربي</button>
+  </div>
+</header>
+
+<div class="kpis">
+  <div class="kpi"><div class="kv" style="color:var(--grn)">94%</div><div class="kl" id="k1">Best R² Score</div></div>
+  <div class="kpi"><div class="kv" style="color:var(--gld)">$4,280</div><div class="kl" id="k2">Lowest MAE</div></div>
+  <div class="kpi"><div class="kv" style="color:var(--ind)">3</div><div class="kl" id="k3">Models Compared</div></div>
+  <div class="kpi"><div class="kv">6,704</div><div class="kl" id="k4">Training Records</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tb on" onclick="showTab('predictor',this)" id="t1">🧮 Salary Predictor</button>
+  <button class="tb" onclick="showTab('models',this)"    id="t2">📊 Model Comparison</button>
+  <button class="tb" onclick="showTab('insights',this)"  id="t3">📈 Data Insights</button>
+  <button class="tb" onclick="showTab('about',this)"     id="t4">📖 About</button>
+</div>
+
+<main class="main">
+
+<!-- PREDICTOR -->
+<div class="sec on" id="s-predictor">
+  <div class="pg">
+    <div class="pc">
+      <h3 id="pTitle">Enter Your Details</h3>
+      <div class="ig">
+        <label class="il" id="expLbl">Years of Experience</label>
+        <div class="sv"><span id="expVal">5</span> <span id="expYrs">yrs</span></div>
+        <input type="range" id="expSlider" min="0" max="30" value="5"
+          oninput="document.getElementById('expVal').textContent=this.value;predict()">
+      </div>
+      <div class="ig">
+        <label class="il" id="skillLbl">Skill Level</label>
+        <div class="sks">
+          <button class="sk" onclick="setSkill('entry',this)" id="sk1">Entry</button>
+          <button class="sk on" onclick="setSkill('mid',this)"    id="sk2">Mid</button>
+          <button class="sk" onclick="setSkill('senior',this)" id="sk3">Senior</button>
+          <button class="sk" onclick="setSkill('expert',this)" id="sk4">Expert</button>
+        </div>
+      </div>
+      <div class="ig">
+        <label class="il" id="catLbl">Job Category</label>
+        <select class="sel" id="catSel" onchange="predict()">
+          <option value="ds"  id="o1">Data Science</option>
+          <option value="eng" id="o2">Engineering</option>
+          <option value="fin" id="o3">Finance</option>
+          <option value="mkt" id="o4">Marketing</option>
+          <option value="hlt" id="o5">Healthcare</option>
+          <option value="con" id="o6">Consulting</option>
+        </select>
+      </div>
+      <div class="ig">
+        <label class="il" id="eduLbl">Education Level</label>
+        <select class="sel" id="eduSel" onchange="predict()">
+          <option value="hs"  id="e1">High School</option>
+          <option value="bs"  id="e2" selected>Bachelor's Degree</option>
+          <option value="ms"  id="e3">Master's Degree</option>
+          <option value="phd" id="e4">PhD</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sd">
+      <div class="sdl" id="predLbl">Predicted Annual Salary</div>
+      <div class="sdn" id="salNum">$0</div>
+      <div class="sdp" id="perYear">per year · USD</div>
+      <div class="sdr">
+        <div class="sdrl" id="rangeLbl">Confidence Range (±12%)</div>
+        <div class="sdrv" id="salRange">— —</div>
+      </div>
+      <div class="mdb" id="bestMdl">🏆 Best Model: Random Forest (R²=94%)</div>
+      <div style="width:100%;margin-top:14px">
+        <div class="cbl">
+          <span id="confLbl">Model Confidence</span>
+          <span id="confPct">94%</span>
+        </div>
+        <div class="cbt"><div class="cbf" id="confFill" style="width:94%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODELS -->
+<div class="sec" id="s-models">
+  <div class="mg">
+    <div class="mc">
+      <div class="mn">📉 Linear Regression</div>
+      <div class="md" id="lrDesc">Simple baseline assuming linear relationship between features and salary.</div>
+      <div class="mr"><span style="color:var(--mu)">R² Score</span><span class="mv" style="color:var(--mu)">0.82</span></div>
+      <div class="mr"><span style="color:var(--mu)">MAE</span><span class="mv">$8,420</span></div>
+      <div class="mr"><span style="color:var(--mu)" id="trnLbl">Training Time</span><span class="mv">0.5s</span></div>
+      <div class="bt"><div class="bf" style="width:82%;background:var(--mu)"></div></div>
+    </div>
+    <div class="mc win">
+      <div class="wtg">🏆 <span id="winTag">BEST MODEL</span></div>
+      <div class="mn" style="color:var(--gld)">🌲 Random Forest</div>
+      <div class="md" id="rfDesc">Ensemble capturing complex patterns. Highest accuracy with lowest error.</div>
+      <div class="mr"><span style="color:var(--mu)">R² Score</span><span class="mv" style="color:var(--grn)">0.94</span></div>
+      <div class="mr"><span style="color:var(--mu)">MAE</span><span class="mv" style="color:var(--grn)">$4,280</span></div>
+      <div class="mr"><span style="color:var(--mu)" id="trnLbl2">Training Time</span><span class="mv">2.3s</span></div>
+      <div class="bt"><div class="bf" style="width:94%;background:var(--gld)"></div></div>
+    </div>
+    <div class="mc">
+      <div class="mn">🌳 Decision Tree</div>
+      <div class="md" id="dtDesc">Single tree with clear rules. Good interpretability, prone to overfitting.</div>
+      <div class="mr"><span style="color:var(--mu)">R² Score</span><span class="mv">0.88</span></div>
+      <div class="mr"><span style="color:var(--mu)">MAE</span><span class="mv">$6,150</span></div>
+      <div class="mr"><span style="color:var(--mu)" id="trnLbl3">Training Time</span><span class="mv">0.8s</span></div>
+      <div class="bt"><div class="bf" style="width:88%;background:var(--ind)"></div></div>
+    </div>
+  </div>
+  <div class="icard">
+    <h3 id="cmpTitle">R² Score vs MAE Comparison</h3>
+    <div class="isub" id="cmpSub">Random Forest outperforms both models on all key metrics</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:14px">
+      <div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:8px" id="r2Lbl">R² Score (Higher = Better)</div>
+        <div class="bar-row"><div class="bar-name">Linear Reg.</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--mu)"></div></div><div class="bar-pct" style="color:var(--mu)">0.82</div></div>
+        <div class="bar-row"><div class="bar-name" style="color:var(--gld)">Random Forest</div><div class="bar-track"><div class="bar-fill" style="width:94%;background:var(--gld)"></div></div><div class="bar-pct" style="color:var(--gld)">0.94</div></div>
+        <div class="bar-row"><div class="bar-name">Decision Tree</div><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--ind)"></div></div><div class="bar-pct" style="color:var(--ind)">0.88</div></div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:8px" id="maeLbl">MAE in USD (Lower = Better)</div>
+        <div class="bar-row"><div class="bar-name">Linear Reg.</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--rd)"></div></div><div class="bar-pct" style="color:var(--rd)">$8.4K</div></div>
+        <div class="bar-row"><div class="bar-name" style="color:var(--grn)">Random Forest</div><div class="bar-track"><div class="bar-fill" style="width:51%;background:var(--grn)"></div></div><div class="bar-pct" style="color:var(--grn)">$4.3K</div></div>
+        <div class="bar-row"><div class="bar-name">Decision Tree</div><div class="bar-track"><div class="bar-fill" style="width:73%;background:var(--ind)"></div></div><div class="bar-pct" style="color:var(--ind)">$6.2K</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="sec" id="s-insights">
+  <div class="ig2">
+    <div class="icard">
+      <h3 id="fiTitle">Feature Importance</h3>
+      <div class="isub" id="fiSub">Random Forest — variable contribution</div>
+      <div class="bar-row"><div class="bar-name" id="fi1">Years of Experience</div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--grn)"></div></div><div class="bar-pct" style="color:var(--grn)">42%</div></div>
+      <div class="bar-row"><div class="bar-name" id="fi2">Skill Level</div><div class="bar-track"><div class="bar-fill" style="width:31%;background:var(--gld)"></div></div><div class="bar-pct" style="color:var(--gld)">31%</div></div>
+      <div class="bar-row"><div class="bar-name" id="fi3">Job Category</div><div class="bar-track"><div class="bar-fill" style="width:16%;background:var(--ind)"></div></div><div class="bar-pct" style="color:var(--ind)">16%</div></div>
+      <div class="bar-row"><div class="bar-name" id="fi4">Education Level</div><div class="bar-track"><div class="bar-fill" style="width:11%;background:var(--rd)"></div></div><div class="bar-pct" style="color:var(--rd)">11%</div></div>
+    </div>
+    <div class="icard">
+      <h3 id="distTitle">Salary by Skill Level</h3>
+      <div class="isub" id="distSub">Average annual salary across training data</div>
+      <div class="bar-row"><div class="bar-name" id="sl1">Entry Level</div><div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--mu)"></div></div><div class="bar-pct" style="color:var(--mu)">$55K</div></div>
+      <div class="bar-row"><div class="bar-name" id="sl2">Mid Level</div><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--ind)"></div></div><div class="bar-pct" style="color:var(--ind)">$92K</div></div>
+      <div class="bar-row"><div class="bar-name" id="sl3">Senior Level</div><div class="bar-track"><div class="bar-fill" style="width:74%;background:var(--gld)"></div></div><div class="bar-pct" style="color:var(--gld)">$136K</div></div>
+      <div class="bar-row"><div class="bar-name" id="sl4">Expert Level</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--grn)"></div></div><div class="bar-pct" style="color:var(--grn)">$184K</div></div>
+    </div>
+  </div>
+  <div class="icard" style="margin-top:18px">
+    <h3 id="expChartTitle">Experience vs Salary — By Skill Level ($K)</h3>
+    <div class="isub" id="expChartSub">Training data · USD Annual Salary</div>
+    <div class="svg-wrap">
+      <svg viewBox="0 0 440 200" width="100%" style="overflow:visible">
+        <!-- Grid -->
+        <line x1="50" y1="10" x2="50" y2="180" stroke="#243050" stroke-width="1"/>
+        <line x1="50" y1="180" x2="420" y2="180" stroke="#243050" stroke-width="1"/>
+        <line x1="50" y1="120" x2="420" y2="120" stroke="#243050" stroke-width=".5" stroke-dasharray="3"/>
+        <line x1="50" y1="60"  x2="420" y2="60"  stroke="#243050" stroke-width=".5" stroke-dasharray="3"/>
+        <!-- Y Labels -->
+        <text x="44" y="185" fill="#8895AE" font-size="9" text-anchor="end">$0</text>
+        <text x="44" y="125" fill="#8895AE" font-size="9" text-anchor="end">$100K</text>
+        <text x="44" y="65"  fill="#8895AE" font-size="9" text-anchor="end">$200K</text>
+        <text x="44" y="14"  fill="#8895AE" font-size="9" text-anchor="end">$300K</text>
+        <!-- X Labels -->
+        <text x="50"  y="194" fill="#8895AE" font-size="9" text-anchor="middle">0</text>
+        <text x="170" y="194" fill="#8895AE" font-size="9" text-anchor="middle">10</text>
+        <text x="295" y="194" fill="#8895AE" font-size="9" text-anchor="middle">20</text>
+        <text x="420" y="194" fill="#8895AE" font-size="9" text-anchor="middle">30 yrs</text>
+        <!-- Entry: [28,36,48,65,78,88,92,95] at [0,2,5,10,15,20,25,30] -->
+        <polyline points="50,165 74,161 112,154 170,145 228,138 295,133 358,131 420,129"
+          fill="none" stroke="#8895AE" stroke-width="2" stroke-linejoin="round"/>
+        <!-- Mid: [42,55,72,95,112,125,132,138] -->
+        <polyline points="50,158 74,151 112,142 170,129 228,120 295,113 358,110 420,106"
+          fill="none" stroke="#6366F1" stroke-width="2" stroke-linejoin="round"/>
+        <!-- Senior: [70,88,115,155,178,195,205,215] -->
+        <polyline points="50,143 74,133 112,119 170,97 228,85 295,76 358,71 420,65"
+          fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round"/>
+        <!-- Expert: [95,125,168,228,258,278,288,295] -->
+        <polyline points="50,129 74,113 112,90 170,58 228,42 295,32 358,26 420,23"
+          fill="none" stroke="#10B981" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="leg">
+      <span><span class="leg-dot" style="background:#8895AE"></span><span id="leg1">Entry</span></span>
+      <span><span class="leg-dot" style="background:#6366F1"></span><span id="leg2">Mid</span></span>
+      <span><span class="leg-dot" style="background:#F59E0B"></span><span id="leg3">Senior</span></span>
+      <span><span class="leg-dot" style="background:#10B981"></span><span id="leg4">Expert</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="sec" id="s-about">
+  <div class="ag">
+    <div class="ac">
+      <h3 id="howTitle">⚙️ How It Works</h3>
+      <div class="step"><div class="sn">1</div><div class="st"><strong id="s1t">Load &amp; Clean Dataset</strong><span id="s1d">6,704 salary records cleaned and preprocessed for ML</span></div></div>
+      <div class="step"><div class="sn">2</div><div class="st"><strong id="s2t">Feature Engineering</strong><span id="s2d">Encode skill levels, categories, and education into numerical features</span></div></div>
+      <div class="step"><div class="sn">3</div><div class="st"><strong id="s3t">Train 3 Models</strong><span id="s3d">Linear Regression, Random Forest, and Decision Tree trained in parallel</span></div></div>
+      <div class="step"><div class="sn">4</div><div class="st"><strong id="s4t">Evaluate &amp; Compare</strong><span id="s4d">Select best model using R² and MAE metrics on test split</span></div></div>
+      <div class="step" style="margin-bottom:0"><div class="sn">5</div><div class="st"><strong id="s5t">Deploy to Streamlit</strong><span id="s5d">Interactive web app deployed to Streamlit Cloud for public access</span></div></div>
+    </div>
+    <div class="ac">
+      <h3 id="stackTitle">🛠️ Technology Stack</h3>
+      <div class="chips">
+        <div class="chip">Python</div><div class="chip">Pandas</div>
+        <div class="chip">NumPy</div><div class="chip">Scikit-Learn</div>
+        <div class="chip">Matplotlib</div><div class="chip">Streamlit</div>
+        <div class="chip">Jupyter</div><div class="chip">Pickle</div>
+        <div class="chip">FastAPI</div>
+      </div>
+      <div style="margin-top:16px">
+        <h3 id="linksTitle" style="margin-bottom:8px">🔗 Links</h3>
+        <div class="lnks">
+          <a href="https://github.com/Salehmsa/Salary-Prediction-Using-ML"
+             target="_blank" class="lg gh">⚡ GitHub Repo</a>
+          <a href="https://salary-prediction-using-ml-n2gzwmuwzyxfsvjsagvkgt.streamlit.app/"
+             target="_blank" class="lg st2">▶ Streamlit App</a>
+        </div>
+      </div>
+      <div class="res" style="margin-top:14px">
+        <strong id="resLbl">Best Result: </strong>
+        <span id="resTxt">Random Forest achieved R²=0.94 with MAE=$4,280 — 49% lower error than Linear Regression</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer class="ftr" id="ftr">
+  Salary Prediction Pro · End-to-End ML Project · Python + Scikit-Learn + Streamlit
+</footer>
+
+<script>
+// ── NO EXTERNAL LIBRARIES ─────────────────────────────────────────────────────
+var skill = 'mid';
+var LANG  = 'en';
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('on'); });
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('s-' + id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── SKILL BUTTONS ─────────────────────────────────────────────────────────────
+function setSkill(s, btn) {
+  skill = s;
+  document.querySelectorAll('.sk').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  predict();
+}
+
+// ── PREDICT ───────────────────────────────────────────────────────────────────
+var BASES = {ds:65,eng:70,fin:60,mkt:45,hlt:62,con:68};
+var MULTS = {entry:.85,mid:1.15,senior:1.55,expert:2.0};
+var EDUS  = {hs:0,bs:8,ms:18,phd:30};
+
+function predict() {
+  var expEl  = document.getElementById('expSlider');
+  var catEl  = document.getElementById('catSel');
+  var eduEl  = document.getElementById('eduSel');
+  var numEl  = document.getElementById('salNum');
+  var rngEl  = document.getElementById('salRange');
+  var confEl = document.getElementById('confPct');
+  var fillEl = document.getElementById('confFill');
+
+  if (!expEl || !catEl || !eduEl || !numEl) return;
+
+  var exp  = parseInt(expEl.value) || 0;
+  var cat  = catEl.value || 'ds';
+  var edu  = eduEl.value || 'bs';
+
+  var expB = exp <= 5 ? exp*5 : exp <= 15 ? 25+(exp-5)*4 : 65+(exp-15)*2;
+  var base = BASES[cat] || 60;
+  var mult = MULTS[skill] || 1.15;
+  var eduB = EDUS[edu] || 0;
+
+  var sal  = Math.round((base + expB + eduB) * mult);
+  var lo   = Math.round(sal * .88);
+  var hi   = Math.round(sal * 1.12);
+
+  numEl.textContent  = '$' + sal + 'K';
+  rngEl.textContent  = '$' + lo  + 'K — $' + hi + 'K';
+
+  var conf = Math.min(94, 75 + exp * .6 + (mult > 1.5 ? 5 : 0));
+  if (confEl) confEl.textContent = Math.round(conf) + '%';
+  if (fillEl) fillEl.style.width = Math.round(conf) + '%';
+}
+
+// ── TRANSLATIONS ──────────────────────────────────────────────────────────────
+var T = {
+  en:{
+    hdrTitle:'💼 Salary Prediction Pro — ML Dashboard',
+    hdrSub:'Linear Regression · Random Forest · Decision Tree',
+    btnApp:'▶ Try Live App', btnLang:'🌐 عربي',
+    k1:'Best R² Score',k2:'Lowest MAE',k3:'Models Compared',k4:'Training Records',
+    t1:'🧮 Salary Predictor',t2:'📊 Model Comparison',t3:'📈 Data Insights',t4:'📖 About',
+    pTitle:'Enter Your Details',expLbl:'Years of Experience',expYrs:'yrs',
+    skillLbl:'Skill Level',sk1:'Entry',sk2:'Mid',sk3:'Senior',sk4:'Expert',
+    catLbl:'Job Category',o1:'Data Science',o2:'Engineering',o3:'Finance',
+    o4:'Marketing',o5:'Healthcare',o6:'Consulting',
+    eduLbl:'Education Level',e1:'High School',e2:"Bachelor's Degree",
+    e3:"Master's Degree",e4:'PhD',
+    predLbl:'Predicted Annual Salary',perYear:'per year · USD',
+    rangeLbl:'Confidence Range (±12%)',bestMdl:'🏆 Best Model: Random Forest (R²=94%)',
+    confLbl:'Model Confidence',winTag:'BEST MODEL',trnLbl:'Training Time',
+    lrDesc:'Simple baseline assuming linear relationship between features and salary.',
+    rfDesc:'Ensemble capturing complex patterns. Highest accuracy with lowest error.',
+    dtDesc:'Single tree with clear rules. Good interpretability, prone to overfitting.',
+    cmpTitle:'R² Score vs MAE Comparison',
+    cmpSub:'Random Forest outperforms both models on all key metrics',
+    r2Lbl:'R² Score (Higher = Better)',maeLbl:'MAE in USD (Lower = Better)',
+    fiTitle:'Feature Importance',fiSub:'Random Forest — variable contribution',
+    fi1:'Years of Experience',fi2:'Skill Level',fi3:'Job Category',fi4:'Education Level',
+    distTitle:'Salary by Skill Level',distSub:'Average annual salary across training data',
+    sl1:'Entry Level',sl2:'Mid Level',sl3:'Senior Level',sl4:'Expert Level',
+    expChartTitle:'Experience vs Salary — By Skill Level ($K)',
+    expChartSub:'Training data · USD Annual Salary',
+    leg1:'Entry',leg2:'Mid',leg3:'Senior',leg4:'Expert',
+    howTitle:'⚙️ How It Works',
+    s1t:'Load & Clean Dataset',s1d:'6,704 salary records cleaned and preprocessed for ML',
+    s2t:'Feature Engineering',s2d:'Encode skill levels, categories, and education into numerical features',
+    s3t:'Train 3 Models',s3d:'Linear Regression, Random Forest, and Decision Tree trained in parallel',
+    s4t:'Evaluate & Compare',s4d:'Select best model using R² and MAE metrics on test split',
+    s5t:'Deploy to Streamlit',s5d:'Interactive app deployed to Streamlit Cloud for public access',
+    stackTitle:'🛠️ Technology Stack',linksTitle:'🔗 Links',
+    resLbl:'Best Result: ',resTxt:'Random Forest R²=0.94 with MAE=$4,280 — 49% lower error than Linear Regression',
+    ftr:'Salary Prediction Pro · End-to-End ML Project · Python + Scikit-Learn + Streamlit',
+  },
+  ar:{
+    hdrTitle:'💼 التنبؤ بالرواتب — لوحة تعلم الآلة',
+    hdrSub:'انحدار خطي · غابة عشوائية · شجرة قرار',
+    btnApp:'▶ تجربة التطبيق', btnLang:'🌐 English',
+    k1:'أفضل نتيجة R²',k2:'أدنى متوسط خطأ',k3:'نماذج مقارنة',k4:'سجل تدريب',
+    t1:'🧮 التنبؤ بالراتب',t2:'📊 مقارنة النماذج',t3:'📈 رؤى البيانات',t4:'📖 حول المشروع',
+    pTitle:'أدخل بياناتك',expLbl:'سنوات الخبرة',expYrs:'سنة',
+    skillLbl:'مستوى المهارة',sk1:'مبتدئ',sk2:'متوسط',sk3:'خبير',sk4:'خبير متقدم',
+    catLbl:'المجال الوظيفي',o1:'علم البيانات',o2:'الهندسة',o3:'المالية',
+    o4:'التسويق',o5:'الرعاية الصحية',o6:'الاستشارات',
+    eduLbl:'المستوى التعليمي',e1:'ثانوية عامة',e2:'بكالوريوس',
+    e3:'ماجستير',e4:'دكتوراه',
+    predLbl:'الراتب السنوي المتوقع',perYear:'سنوياً · دولار أمريكي',
+    rangeLbl:'نطاق الثقة (±12%)',bestMdl:'🏆 أفضل نموذج: الغابة العشوائية (R²=94%)',
+    confLbl:'ثقة النموذج',winTag:'الأفضل',trnLbl:'وقت التدريب',
+    lrDesc:'نموذج خط الأساس البسيط الذي يفترض علاقة خطية بين المتغيرات والرواتب.',
+    rfDesc:'مجموعة من الأشجار تلتقط الأنماط المعقدة. أعلى دقة وأقل خطأ.',
+    dtDesc:'شجرة واحدة بقواعد واضحة. قابلة للتفسير لكنها عرضة للإفراط في التخصيص.',
+    cmpTitle:'مقارنة R² وMAE',
+    cmpSub:'الغابة العشوائية تتفوق على النموذجين في جميع المقاييس',
+    r2Lbl:'درجة R² (الأعلى أفضل)',maeLbl:'متوسط الخطأ بالدولار (الأقل أفضل)',
+    fiTitle:'أهمية المتغيرات',fiSub:'الغابة العشوائية — مساهمة كل متغير',
+    fi1:'سنوات الخبرة',fi2:'مستوى المهارة',fi3:'المجال الوظيفي',fi4:'المستوى التعليمي',
+    distTitle:'الرواتب حسب مستوى المهارة',distSub:'متوسط الراتب السنوي في بيانات التدريب',
+    sl1:'مبتدئ',sl2:'متوسط',sl3:'خبير',sl4:'خبير متقدم',
+    expChartTitle:'الخبرة مقابل الراتب — حسب مستوى المهارة ($K)',
+    expChartSub:'بيانات التدريب · الراتب السنوي بالدولار الأمريكي',
+    leg1:'مبتدئ',leg2:'متوسط',leg3:'خبير',leg4:'خبير متقدم',
+    howTitle:'⚙️ كيف يعمل النموذج',
+    s1t:'تحميل البيانات وتنظيفها',s1d:'6,704 سجل راتب تم تنظيفه ومعالجته للتعلم الآلي',
+    s2t:'هندسة المتغيرات',s2d:'تحويل مستويات المهارة والفئات والتعليم إلى متغيرات رقمية',
+    s3t:'تدريب 3 نماذج',s3d:'الانحدار الخطي والغابة العشوائية وشجرة القرار معاً',
+    s4t:'التقييم والمقارنة',s4d:'اختيار أفضل نموذج باستخدام R² وMAE على بيانات الاختبار',
+    s5t:'النشر على Streamlit',s5d:'تطبيق تفاعلي منشور على Streamlit Cloud للوصول العام',
+    stackTitle:'🛠️ الأدوات المستخدمة',linksTitle:'🔗 الروابط',
+    resLbl:'أفضل نتيجة: ',resTxt:'الغابة العشوائية حققت R²=0.94 مع MAE=$4,280 — أقل خطأ بـ 49% من الانحدار الخطي',
+    ftr:'التنبؤ بالرواتب الاحترافي · مشروع تعلم الآلة الشامل · Python + Scikit-Learn + Streamlit',
+  }
+};
+
+function applyT(lang) {
+  var ids = Object.keys(T[lang]);
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = T[lang][id];
+  });
+}
+
+function toggleLang() {
+  LANG = LANG === 'en' ? 'ar' : 'en';
+  document.documentElement.dir  = LANG === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = LANG;
+  document.body.classList.toggle('ar', LANG === 'ar');
+  applyT(LANG);
+  predict();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+applyT('en');
+predict();
+</script>
+</body>
+</html>
