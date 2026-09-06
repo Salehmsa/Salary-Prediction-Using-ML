@@ -10,8 +10,51 @@ from model import load_model, train_models
 # ----------------------------------
 # 🎨 Page Config
 # ----------------------------------
-st.set_page_config(page_title="Salary Predictor Pro", page_icon="💼")
+st.set_page_config(page_title="Salary Predictor Pro", page_icon="🤖")
 
+# ==== ضع الكود الجديد هنا (بعد السطر 13 مباشرة) ====
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #0e1117;
+    }
+    .main .block-container {
+        max-width: 900px;
+        padding-top: 2rem;
+        padding-left: 3rem;
+        padding-right: 3rem;
+        margin: 0 auto;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #161a23;
+        border-right: 1px solid #2d3340;
+    }
+    .custom-card {
+        background-color: #161a23;
+        border: 1px solid #2d3340;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+    h1, h2, h3 {
+        color: #ffffff !important;
+    }
+    .prediction-box {
+        background: linear-gradient(135deg, #1a5c3a, #0e3d26);
+        border: 1px solid #2ecc71;
+        border-radius: 10px;
+        padding: 25px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: #2ecc71;
+    }
+</style>
+""", unsafe_allow_html=True)
+# ==== نهاية الكود المضاف ====
+
+st.title("🤖 Salary Prediction App")
+st.markdown("### Production Machine Learning Application")
 st.title("💼 Salary Prediction App")
 st.markdown("### Production Machine Learning Application")
 
