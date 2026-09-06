@@ -52,8 +52,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 # ==== نهاية الكود المضاف ====
 
-st.title("🤖 Salary Prediction App")
-st.markdown("### Production Machine Learning Application")
 st.title("💼 Salary Prediction App")
 st.markdown("### Production Machine Learning Application")
 
