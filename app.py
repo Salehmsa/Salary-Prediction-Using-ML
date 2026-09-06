@@ -10,7 +10,6 @@ from model import load_model, train_models
 # ----------------------------------
 # 🎨 Page Config
 # ----------------------------------
-st.set_page_config(page_title="Salary Predictor Pro", page_icon="🤖")
 
 # ==== ضع الكود الجديد هنا (بعد السطر 13 مباشرة) ====
 st.markdown("""
